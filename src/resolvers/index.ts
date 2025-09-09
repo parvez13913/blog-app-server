@@ -1,29 +1,19 @@
-type Post = {
-  id: string;
-  title: string;
-  content: string;
-};
+import { PrismaClient } from "@prisma/client";
 
-let posts: Post[] = []; // In-memory storage
+interface SignupType {
+  name: string;
+  email: string;
+  password: string;
+}
+
+const prisma = new PrismaClient();
 
 export const resolvers = {
-  Query: {
-    posts: () => posts,
-    post: (_: unknown, { id }: { id: string }) =>
-      posts.find((p) => p.id === id),
-  },
   Mutation: {
-    createPost: (
-      _: unknown,
-      { title, content }: { title: string; content: string }
-    ) => {
-      const newPost: Post = {
-        id: String(posts.length + 1),
-        title,
-        content,
-      };
-      posts.push(newPost);
-      return newPost;
+    signup: async (parent: any, args: SignupType, context: any) => {
+      return await prisma.user.create({
+        data: args,
+      });
     },
   },
 };
