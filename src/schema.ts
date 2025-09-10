@@ -4,14 +4,22 @@ export const typeDefs = gql`
   type Query {
     posts: [Post!]!
     users: [User!]!
+    myProfile(id: ID!): Profile
   }
 
   type Mutation {
-    signup(name: String!, email: String!, password: String!): AuthPayload
+    signup(
+      name: String!
+      email: String!
+      password: String!
+      bio: String
+    ): AuthPayload
+    signin(email: String!, password: String!): AuthPayload
   }
 
   type AuthPayload {
-    token: String!
+    token: String
+    userError: String
   }
 
   type Post {
