@@ -1,6 +1,7 @@
 import jwt, { Secret } from "jsonwebtoken";
+import config from "../config";
 
-const jwtHelper = {
+const generateToken = {
   sign: (payload: { userId: number }, secret: Secret) => {
     const token = jwt.sign({ payload }, secret, {
       expiresIn: "1d",
@@ -8,4 +9,21 @@ const jwtHelper = {
     return token;
   },
 };
-export default jwtHelper;
+
+const getUserInfoFromToken = (token: string) => {
+  try {
+    const decodedData = jwt.verify(token, config.jwt.jwtSecret as string) as {
+      userId: number;
+    };
+    console.log("decodedData", decodedData);
+
+    return decodedData;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const JwtHelper = {
+  generateToken,
+  getUserInfoFromToken,
+};

@@ -15,11 +15,7 @@ export const typeDefs = gql`
       bio: String
     ): AuthPayload
     signin(email: String!, password: String!): AuthPayload
-  }
-
-  type AuthPayload {
-    token: String
-    userError: String
+    addPost(title: String!, content: String!): PostPayload
   }
 
   type Post {
@@ -43,5 +39,15 @@ export const typeDefs = gql`
     bio: String!
     createdAt: String!
     user: User!
+  }
+
+  type AuthPayload {
+    token: String
+    userError: String
+  }
+
+  type PostPayload {
+    userError: String
+    post: Post
   }
 `;

@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import config from "../../config";
-import jwtHelper from "../../utils/jwt-helper";
+import { JwtHelper } from "../../utils/jwt-helper";
 
 interface SignupType {
   name: string;
@@ -11,6 +11,10 @@ interface SignupType {
 interface SigninType {
   email: string;
   password: string;
+}
+interface AddPostType {
+  title: string;
+  content: string;
 }
 
 export const Mutation = {
@@ -44,7 +48,7 @@ export const Mutation = {
       });
     }
 
-    const token = await jwtHelper.sign(
+    const token = await JwtHelper.generateToken.sign(
       { userId: newUser.id },
       config.jwt.jwtSecret as string
     );
@@ -70,10 +74,13 @@ export const Mutation = {
       };
     }
 
-    const token = await jwtHelper.sign(
+    const token = await JwtHelper.generateToken.sign(
       { userId: user.id },
       config.jwt.jwtSecret as string
     );
     return { token, userError: null };
+  },
+  addPost: async (parent: any, args: AddPostType, context: any) => {
+    console.log(context.userInfo);
   },
 };
