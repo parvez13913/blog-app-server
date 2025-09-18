@@ -15,8 +15,6 @@ const getUserInfoFromToken = (token: string) => {
     const decodedData = jwt.verify(token, config.jwt.jwtSecret as string) as {
       userId: number;
     };
-    console.log("decodedData", decodedData);
-
     return decodedData;
   } catch (error) {
     return null;

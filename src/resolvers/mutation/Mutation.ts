@@ -81,6 +81,33 @@ export const Mutation = {
     return { token, userError: null };
   },
   addPost: async (parent: any, args: AddPostType, context: any) => {
-    console.log(context.userInfo);
+    console.log(context.userInfo, context.userInfo?.payload.userId);
+
+    if (!context.userInfo || !context.userInfo?.payload?.userId) {
+      return {
+        post: null,
+        userError: "You must be logged in to add a post",
+      };
+    }
+
+    if (!args.title || !args.content) {
+      return {
+        post: null,
+        userError: "Title and content cannot be empty",
+      };
+    }
+
+    const newPost = await context.prisma.post.create({
+      data: {
+        title: args.title,
+        content: args.content,
+        authorId: context.userInfo?.payload?.userId,
+      },
+    });
+
+    return {
+      post: newPost,
+      userError: null,
+    };
   },
 };
