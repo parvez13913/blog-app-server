@@ -17,6 +17,7 @@ export const typeDefs = gql`
     signin(email: String!, password: String!): AuthPayload
     addPost(post: PostInput!): PostPayload
     updatePost(postId: ID!, post: PostInput): PostPayload
+    deletePost(postId: ID!): PostPayload
   }
 
   type Post {

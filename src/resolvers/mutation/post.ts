@@ -1,3 +1,5 @@
+import { checkUserAccess } from "../../utils/checkUserAccess";
+
 interface AddPostType {
   title: string;
   content: string;
@@ -48,36 +50,16 @@ export const postResolvers = {
         userError: "You must be logged in to update a post",
       };
     }
-    const user = await context.prisma.user.findUnique({
-      where: { id: context.userInfo?.payload?.userId },
+
+    const error = await checkUserAccess({
+      prisma: context.prisma,
+      userId: context.userInfo?.payload?.userId,
+      postId: args.postId,
     });
 
-    if (!user) {
-      return {
-        post: null,
-        userError: "User not found",
-      };
+    if (error) {
+      return error;
     }
-    const isPostExist = await context.prisma.post.findUnique({
-      where: {
-        id: Number(args.postId),
-      },
-    });
-
-    if (!isPostExist) {
-      return {
-        post: null,
-        userError: "Post not found",
-      };
-    }
-
-    if (isPostExist?.authorId !== user?.id) {
-      return {
-        post: null,
-        userError: "You are not authorized to update this post",
-      };
-    }
-    console.log(args.post);
 
     const updatePost = await context.prisma.post.update({
       where: {
@@ -88,6 +70,36 @@ export const postResolvers = {
 
     return {
       post: updatePost,
+      userError: null,
+    };
+  },
+
+  deletePost: async (parent: any, args: any, context: any) => {
+    if (!context.userInfo || !context.userInfo?.payload?.userId) {
+      return {
+        post: null,
+        userError: "You must be logged in to update a post",
+      };
+    }
+
+    const error = await checkUserAccess({
+      prisma: context.prisma,
+      userId: context.userInfo?.payload?.userId,
+      postId: args.postId,
+    });
+
+    if (error) {
+      return error;
+    }
+
+    const deletePost = await context.prisma.post.delete({
+      where: {
+        id: Number(args.postId),
+      },
+    });
+
+    return {
+      post: deletePost,
       userError: null,
     };
   },
