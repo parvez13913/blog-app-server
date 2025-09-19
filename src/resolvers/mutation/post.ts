@@ -103,4 +103,30 @@ export const postResolvers = {
       userError: null,
     };
   },
+
+  publishPost: async (parent: any, args: any, context: any) => {
+    if (!context.userInfo || !context.userInfo?.payload?.userId) {
+      return {
+        post: null,
+        userError: "You must be logged in to publish a post",
+      };
+    }
+    const error = await checkUserAccess({
+      prisma: context.prisma,
+      userId: context.userInfo?.payload?.userId,
+      postId: args.postId,
+    });
+    if (error) {
+      return error;
+    }
+    const publishPost = await context.prisma.post.update({
+      where: { id: Number(args.postId) },
+      data: { published: true },
+    });
+
+    return {
+      post: publishPost,
+      userError: null,
+    };
+  },
 };
